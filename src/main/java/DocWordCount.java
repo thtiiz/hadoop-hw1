@@ -9,7 +9,6 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class DocWordCount {
@@ -23,8 +22,6 @@ public class DocWordCount {
 
       // remove .txt from file
       String filename = key.toString().substring(0, key.toString().length() - 4);
-//      FileSplit fileSplit = (FileSplit)context.getInputSplit();
-//      String filename = fileSplit.getPath().getName();
 
       while (itr.hasMoreTokens()) {
         String keyWithFileName = itr.nextToken().concat("\t" + filename);
