@@ -9,6 +9,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class DocWordCount {
@@ -21,10 +22,12 @@ public class DocWordCount {
       StringTokenizer itr = new StringTokenizer(value.toString());
 
       // remove .txt from file
-      String fileName = key.toString().substring(0, key.toString().length() - 4);
+      String filename = key.toString().substring(0, key.toString().length() - 4);
+//      FileSplit fileSplit = (FileSplit)context.getInputSplit();
+//      String filename = fileSplit.getPath().getName();
 
       while (itr.hasMoreTokens()) {
-        String keyWithFileName = itr.nextToken().concat("\t" + fileName);
+        String keyWithFileName = itr.nextToken().concat("\t" + filename);
         word.set(keyWithFileName);
         context.write(word, one);
       }
@@ -47,11 +50,12 @@ public class DocWordCount {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
-    SplitSize.getInstance().setSplitSize(args[2]);
     Job job = Job.getInstance(conf, "doc word count");
-
+    SplitSize.getInstance().setSplitSize(args[2]);
     job.setNumReduceTasks(Integer.parseInt(args[3]));
+
     job.setInputFormatClass(DocFileInputFormat.class);
+
     job.setJarByClass(DocWordCount.class);
     job.setMapperClass(TokenizerMapper.class);
     job.setCombinerClass(IntSumReducer.class);
